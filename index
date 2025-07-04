@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Vilket lag tillhör du?</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background: #222;
+      padding: 2em;
+      border-radius: 1em;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      text-align: center;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 0.5em 1em;
+      margin-top: 1em;
+      cursor: pointer;
+      border: none;
+      border-radius: 0.5em;
+    }
+    .red { background-color: red; color: white; }
+    .blue { background-color: blue; color: white; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Klicka för att se vilket lag du tillhör</h1>
+    <button onclick="revealTeam()">Visa mitt lag</button>
+    <div id="result" style="margin-top: 2em; font-size: 2em;"></div>
+  </div>
+
+  <script>
+    const teams = ['RÖD', 'RÖD', 'RÖD', 'RÖD', 'BLÅ', 'BLÅ', 'BLÅ', 'BLÅ'];
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    let shuffledTeams = [];
+    let current = 0;
+
+    function loadState() {
+      const storedTeam = localStorage.getItem('myTeam');
+      const storedIndex = localStorage.getItem('teamIndex');
+
+      if (storedTeam && storedIndex !== null) {
+        current = parseInt(storedIndex, 10);
+        return storedTeam;
+      }
+      return null;
+    }
+
+    function saveState(team, index) {
+      localStorage.setItem('myTeam', team);
+      localStorage.setItem('teamIndex', index);
+    }
+
+    function revealTeam() {
+      const savedTeam = loadState();
+      const result = document.getElementById('result');
+
+      if (savedTeam) {
+        result.textContent = `DU ÄR I LAG ${savedTeam}`;
+        result.className = savedTeam === 'RÖD' ? 'red' : 'blue';
+        return;
+      }
+
+      if (shuffledTeams.length === 0) {
+        shuffledTeams = shuffle([...teams]);
+      }
+
+      if (current >= shuffledTeams.length) {
+        result.textContent = "Alla lag är redan utdelade.";
+        result.className = '';
+        return;
+      }
+
+      const team = shuffledTeams[current++];
+      saveState(team, current - 1);
+
+      result.textContent = `DU ÄR I LAG ${team}`;
+      result.className = team === 'RÖD' ? 'red' : 'blue';
+    }
+  </script>
+</body>
+</html>
